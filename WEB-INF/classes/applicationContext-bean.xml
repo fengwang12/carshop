@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+ <!--1:spring管理hibernate的配置文件  -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	 	<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+	 </bean>
+	 
+	 <!--2:通过hibernateTemplate来封装获取到的sessionFactory  -->
+	 <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+	 	<property name="sessionFactory" ref="sessionFactory" />
+	 </bean>
+	 
+	  <!--3：此处由Spring提供事务管理器，来控制sessionFactory，sessionFactory此时是被hibernateTemplate封装的  -->
+	 <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	 	<property name="sessionFactory" ref="sessionFactory" />
+	 </bean>
+	
+	 <bean id="baseService" class="net.dxy.cs.service.impl.BaseServiceImpl" lazy-init="true">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	 
+	 <bean id="forderService" class="net.dxy.cs.service.impl.ForderServiceImpl" parent="baseService" />
+	 <bean id="sorderService" class="net.dxy.cs.service.impl.SorderServiceImpl" parent="baseService"/>
+	 <bean id="usedcarService" class="net.dxy.cs.service.impl.UsedcarServiceImpl" parent="baseService" />
+	 <bean id="eecService" class="net.dxy.cs.service.impl.EecServiceImpl" parent="baseService"/>
+	 <bean id="accountService" class="net.dxy.cs.service.impl.AccountServiceImpl" parent="baseService"/>
+	 <bean id="categoryService" class="net.dxy.cs.service.impl.CategoryServiceImpl" parent="baseService" />
+	 <bean id="newcarService" class="net.dxy.cs.service.impl.NewcarServiceImpl" parent="baseService" />
+	 <bean id="memberService" class="net.dxy.cs.service.impl.MemberServiceImpl" parent="baseService" />
+	 <bean id="csEmailUtil" class="net.dxy.cs.util.CsEmailUtil" />
+	 <bean id="onlinePayService" class="net.dxy.cs.service.impl.OnlinePayService" />
+	 <bean id="fileUploadUtil" class="net.dxy.cs.util.FileUploadUtil" >
+	 	 <property name="filePath" value="E:\develop-tools\apache-tomcat-6.0.45\webapps\carshop\images\newcar" />
+	 </bean>
+	 
+	 <bean id="csTimerTask" class="net.dxy.cs.util.CsTimerTask">
+		<property name="categoryService" ref="categoryService" />
+		<property name="newcarService" ref="newcarService" />
+		<property name="usedcarService" ref="usedcarService" />
+	</bean>
+</beans>
